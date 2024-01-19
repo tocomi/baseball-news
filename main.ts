@@ -1,8 +1,9 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
 import { WebClient } from '@slack/web-api';
+import 'dotenv/config';
 
-const slackToken = 'xoxb-196318977316-6503638352436-wGSNre0PoYx9eDRMOiD0JAki';
-const channelId = 'C5SAQTQMT';
+const slackToken = process.env.SLACK_TOKEN || '';
+const channelId = process.env.CHANNEL_ID || '';
 
 async function setup(): Promise<{
   page: Page;
