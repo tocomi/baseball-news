@@ -1,17 +1,72 @@
-import puppeteer from 'puppeteer';
+import puppeteer, { Browser, Page } from 'puppeteer';
 import { WebClient } from '@slack/web-api';
 
-const url = 'https://baseball.yahoo.co.jp/npb/';
 const slackToken = 'xoxb-196318977316-6503638352436-wGSNre0PoYx9eDRMOiD0JAki';
 const channelId = 'C5SAQTQMT';
 
-async function screenshotAndPost() {
-  // Puppeteerを使用してブラウザを起動し、ページにアクセス
+async function setup(): Promise<{
+  page: Page;
+  browser: Browser;
+}> {
   const browser = await puppeteer.launch({ headless: 'new' });
   const page = await browser.newPage();
+  console.log('🚀 setup is DONE');
+  return { page, browser };
+}
+
+async function uploadImage({
+  imageBuffer,
+  filename,
+  title,
+  url,
+}: {
+  imageBuffer: Buffer;
+  filename: string;
+  title: string;
+  url: string;
+}) {
+  const slackClient = new WebClient(slackToken);
+  await slackClient.files.uploadV2({
+    channel_id: channelId,
+    file: imageBuffer,
+    filename,
+    title,
+    initial_comment: url,
+  });
+
+  console.log('🖼️ File uploaded:', filename);
+}
+
+async function sendTopics({ page, browser }: { page: Page; browser: Browser }) {
+  const url = 'https://baseball.yahoo.co.jp/npb';
   await page.goto(url);
 
-  // 指定された要素のスクリーンショットを取得
+  const element = await page.$('#pkart');
+  if (!element) {
+    console.error('Element not found');
+    await browser.close();
+    return;
+  }
+  const screenshotBuffer = await element.screenshot();
+
+  await uploadImage({
+    imageBuffer: screenshotBuffer,
+    filename: 'topics.png',
+    title: '今日のトピックス',
+    url,
+  });
+}
+
+async function sendTodayGames({
+  page,
+  browser,
+}: {
+  page: Page;
+  browser: Browser;
+}) {
+  const url = 'https://baseball.yahoo.co.jp/npb';
+  await page.goto(url);
+
   const element = await page.$('.bb-score');
   if (!element) {
     console.error('Element not found');
@@ -20,19 +75,24 @@ async function screenshotAndPost() {
   }
   const screenshotBuffer = await element.screenshot();
 
-  // Slackに画像を投稿
-  const slackClient = new WebClient(slackToken);
-  const result = await slackClient.files.upload({
-    channels: channelId,
-    file: screenshotBuffer,
-    filename: 'screenshot.png',
-    title: '今日のプロ野球',
-    initial_comment: 'https://baseball.yahoo.co.jp/npb',
+  await uploadImage({
+    imageBuffer: screenshotBuffer,
+    filename: 'games.png',
+    title: '今日の試合',
+    url,
   });
-
-  console.log('File uploaded:', result.file?.id);
-
-  await browser.close();
 }
 
-screenshotAndPost().catch(console.error);
+async function main() {
+  console.log('⚾ Start');
+  const { page, browser } = await setup();
+  try {
+    await sendTopics({ page, browser });
+    await sendTodayGames({ page, browser });
+    console.log('⚾ Finished');
+  } finally {
+    await browser.close();
+  }
+}
+
+main();
