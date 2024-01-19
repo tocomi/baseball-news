@@ -1,0 +1,19 @@
+{
+  "name": "baseball-news",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc && node dist/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@slack/web-api": "^7.0.1",
+    "puppeteer": "^21.7.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
