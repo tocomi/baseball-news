@@ -15,7 +15,7 @@ async function setup(): Promise<{
   return { page, browser };
 }
 
-async function uploadImage({
+async function postImage({
   imageBuffer,
   filename,
   title,
@@ -27,15 +27,31 @@ async function uploadImage({
   url: string;
 }) {
   const slackClient = new WebClient(slackToken);
-  await slackClient.files.uploadV2({
-    channel_id: channelId,
+  const uploadResult = await slackClient.files.upload({
     file: imageBuffer,
     filename,
     title,
-    initial_comment: url,
   });
 
-  console.log('🖼️ File uploaded:', filename);
+  await slackClient.chat.postMessage({
+    channel: channelId,
+    blocks: [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*<${url}|${title}>*`,
+        },
+      },
+      {
+        type: 'image',
+        image_url: uploadResult.file?.permalink,
+        alt_text: title,
+      },
+    ],
+  });
+
+  console.log('📸 Image posted:', filename);
 }
 
 async function sendTopics({ page, browser }: { page: Page; browser: Browser }) {
@@ -50,7 +66,7 @@ async function sendTopics({ page, browser }: { page: Page; browser: Browser }) {
   }
   const screenshotBuffer = await element.screenshot();
 
-  await uploadImage({
+  await postImage({
     imageBuffer: screenshotBuffer,
     filename: 'topics.png',
     title: '今日のトピックス',
@@ -76,10 +92,10 @@ async function sendTodayGames({
   }
   const screenshotBuffer = await element.screenshot();
 
-  await uploadImage({
+  await postImage({
     imageBuffer: screenshotBuffer,
     filename: 'games.png',
-    title: '今日の試合',
+    title: '⚾ 本日の試合はこちら',
     url,
   });
 }
@@ -88,7 +104,7 @@ async function main() {
   console.log('⚾ Start');
   const { page, browser } = await setup();
   try {
-    await sendTopics({ page, browser });
+    // await sendTopics({ page, browser });
     await sendTodayGames({ page, browser });
     console.log('⚾ Finished');
   } finally {
