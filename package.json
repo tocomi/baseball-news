@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node dist/main.js"
+    "sendTodayGames": "tsc && node dist/sendTodayGames.js",
+    "sendTopics": "tsc && node dist/sendTopics.js"
   },
   "keywords": [],
   "author": "",
