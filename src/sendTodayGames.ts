@@ -19,7 +19,8 @@ const noTodayGames = async ({
   const textContent = await (
     await element.getProperty('textContent')
   ).jsonValue();
-  return textContent === '試合はありません'
+  if (!textContent) return false
+  return textContent.includes('試合はありません')
 }
 
 async function sendTodayGames({
