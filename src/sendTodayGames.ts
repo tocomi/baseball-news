@@ -48,7 +48,7 @@ async function sendTodayGames({
   }
 
   // 試合結果の要素
-  const scoreElement = await page.$('.bb-score');
+  const scoreElement = await page.$('#gm_card');
   if (!scoreElement) {
     console.error('Score element is not found');
     await browser.close();
