@@ -56,21 +56,8 @@ async function sendTodayGames({
   }
   const scoreScreenshotBuffer = await scoreElement.screenshot();
 
-  // 順位表の要素
-  await page.goto('https://baseball.yahoo.co.jp/npb/standings');
-  const standingsElements = await page.$$('.bb-modCommon01');
-  if (standingsElements.length === 0) {
-    console.error('Standings element is not found');
-    await browser.close();
-    return;
-  }
-  const preSeasonStandingsElement = standingsElements[3];
-  const standingsScreenshotBuffer =
-    await preSeasonStandingsElement.screenshot();
-
   const images = [
     { imageBuffer: scoreScreenshotBuffer, filename: 'games.png' },
-    { imageBuffer: standingsScreenshotBuffer, filename: 'standings.png' },
   ];
 
   await postImage({

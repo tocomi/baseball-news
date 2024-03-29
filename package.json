@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "sendTodayGames": "tsc && node dist/sendTodayGames.js",
-    "sendTopics": "tsc && node dist/sendTopics.js"
+    "sendTopics": "tsc && node dist/sendTopics.js",
+    "sendStandings": "tsc && node dist/sendStandings.js"
   },
   "keywords": [],
   "author": "",
