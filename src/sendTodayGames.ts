@@ -48,16 +48,20 @@ async function sendTodayGames({
   }
 
   // 試合結果の要素
-  const scoreElement = await page.$('#gm_card');
-  if (!scoreElement) {
+  const scoreElements = await page.$$('#gm_card .bb-score');
+  if (!scoreElements.length) {
     console.error('Score element is not found');
     await browser.close();
     return;
   }
-  const scoreScreenshotBuffer = await scoreElement.screenshot();
+  const centralScoreElement = scoreElements[0];
+  const pacificScoreElement = scoreElements[1];
+  const centralScoreScreenshotBuffer = await centralScoreElement.screenshot();
+  const pacificScoreScreenshotBuffer = await pacificScoreElement.screenshot();
 
   const images = [
-    { imageBuffer: scoreScreenshotBuffer, filename: 'games.png' },
+    { imageBuffer: centralScoreScreenshotBuffer, filename: 'central.png' },
+    { imageBuffer: pacificScoreScreenshotBuffer, filename: 'pacific.png' },
   ];
 
   await postImage({
