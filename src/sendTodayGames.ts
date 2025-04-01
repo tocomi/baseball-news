@@ -60,8 +60,8 @@ async function sendTodayGames({
   const pacificScoreScreenshotBuffer = await pacificScoreElement.screenshot();
 
   const images = [
-    { imageBuffer: centralScoreScreenshotBuffer, filename: 'central.png' },
-    { imageBuffer: pacificScoreScreenshotBuffer, filename: 'pacific.png' },
+    { imageBuffer: Buffer.from(centralScoreScreenshotBuffer), filename: 'central.png' },
+    { imageBuffer: Buffer.from(pacificScoreScreenshotBuffer), filename: 'pacific.png' },
   ];
 
   await postImage({

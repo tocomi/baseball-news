@@ -27,13 +27,14 @@ async function sendStandings({
   const pacificLeagueScreenshotBuffer =
     await pacificLeagueStandingsElement.screenshot();
 
+  // NOTE: オープン戦の順位表
   // const preSeasonStandingsElement = standingsElements[3];
   // const standingsScreenshotBuffer =
   //   await preSeasonStandingsElement.screenshot();
 
   const images = [
-    { imageBuffer: centralLeagueScreenshotBuffer, filename: 'central_league_standings.png' },
-    { imageBuffer: pacificLeagueScreenshotBuffer, filename: 'pacific_league_standings.png' },
+    { imageBuffer: Buffer.from(centralLeagueScreenshotBuffer), filename: 'central_league_standings.png' },
+    { imageBuffer: Buffer.from(pacificLeagueScreenshotBuffer), filename: 'pacific_league_standings.png' },
   ];
 
   await postImage({
