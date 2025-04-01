@@ -22,5 +22,6 @@ cp .env.sample .env
 
 ```
 pnpm i
-pnpm start
+npx puppeteer browsers install chrome
+pnpm sendXXX
 ```
