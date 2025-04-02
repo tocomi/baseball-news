@@ -1,0 +1,29 @@
+name: Standings
+
+on:
+  schedule:
+    # 毎週月曜日午前9時に実行 (UTC 0:00 = JST 9:00)
+    - cron: '0 0 * * Mon'
+
+jobs:
+  standings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Install dependencies
+        run: pnpm install
+      - name: Install Chrome
+        run: npx puppeteer browsers install chrome
+      - name: Send standings
+        run: pnpm sendStandings
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
