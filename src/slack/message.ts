@@ -1,4 +1,4 @@
-import { Block, FilesUploadResponse, WebClient } from '@slack/web-api';
+import { Block, WebClient } from '@slack/web-api';
 import 'dotenv/config';
 
 const slackToken = process.env.SLACK_TOKEN || '';
@@ -19,33 +19,15 @@ export async function postImage({
 }) {
   const slackClient = new WebClient(slackToken);
 
-  const uploadResults: FilesUploadResponse[] = [];
   for (const { imageBuffer, filename } of images) {
-    const uploadResult = await slackClient.files.upload({
+    await slackClient.files.uploadV2({
+      channel_id: channelId,
       file: imageBuffer,
       filename,
       title: filename,
+      initial_comment: `*<${link.url}|${link.title}>*`,
     });
-    uploadResults.push(uploadResult);
   }
-
-  await slackClient.chat.postMessage({
-    channel: channelId,
-    blocks: [
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `*<${link.url}|${link.title}>*`,
-        },
-      },
-      ...uploadResults.map((uploadResult) => ({
-        type: 'image',
-        image_url: uploadResult.file?.permalink,
-        alt_text: uploadResult.file?.title || 'uploaded image',
-      })),
-    ],
-  });
 
   console.log(
     '📸 Image posted:',
