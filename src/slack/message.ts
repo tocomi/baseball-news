@@ -19,15 +19,15 @@ export async function postImage({
 }) {
   const slackClient = new WebClient(slackToken);
 
-  for (const { imageBuffer, filename } of images) {
-    await slackClient.files.uploadV2({
-      channel_id: channelId,
+  await slackClient.files.uploadV2({
+    channel_id: channelId,
+    initial_comment: `*<${link.url}|${link.title}>*`,
+    file_uploads: images.map(({ imageBuffer, filename }) => ({
       file: imageBuffer,
       filename,
       title: filename,
-      initial_comment: `*<${link.url}|${link.title}>*`,
-    });
-  }
+    })),
+  });
 
   console.log(
     '📸 Image posted:',
